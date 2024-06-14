@@ -1,0 +1,58 @@
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import { useParams, redirect } from "next/navigation";
+import Image from "next/image";
+
+export default function Profile() {
+  const params = useParams();
+  const user = useQuery({
+    queryKey: ["user", params.userId],
+    queryFn: () => api.getUser(params.userId as string),
+  });
+  if (user.isError) {
+    return redirect("/app");
+  }
+  if (user.isLoading) {
+    return <div>Loading...</div>;
+  }
+  return (
+    <>
+      {user.isLoading ? <div> Loading...</div> : null}
+      {user.isError ? <div> Error...</div> : null}
+      {user.isSuccess ? (
+        <div className="flex justify-between items-center p-4 border-b border-gray-900 ">
+          <div className="flex items-center  gap-4">
+            <Image
+              src={user.data.user.image}
+              width={100}
+              height={100}
+              className="w-24 rounded-full"
+              alt="User Profile Image"
+            />
+            <div className="flex flex-col gap-2">
+              <h1 className="text-xl font-semibold">{user.data.user.name}</h1>
+              <p className="">{user.data.user.email}</p>
+            </div>
+          </div>
+          <div className="flex gap-4 flex-col w-1/4 p-2">
+            <div className="flex gap-4">
+              <div className="text-center">
+                <h3 className="font-semibold">100</h3>
+                <h4>Followers</h4>
+              </div>
+              <div className="text-center">
+                <h3 className="font-semibold">37</h3>
+                <h4>Following</h4>
+              </div>
+            </div>
+
+            <button className="bg-blue-400  rounded-full text-white p-2 hover:bg-blue-500">
+              Follow
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
