@@ -4,6 +4,7 @@ import api from "@/lib/axios";
 import { useParams, redirect } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import Post from "@/components/Post";
 
 export default function Profile() {
   const params = useParams();
@@ -15,7 +16,10 @@ export default function Profile() {
       return api.getUser(params.userId as string);
     },
   });
-
+  const posts = useQuery({
+    queryKey: ["posts", params.userId],
+    queryFn: () => api.getUserPosts(params.userId as string),
+  });
   const followUser = useMutation({
     mutationFn: () => {
       return api.followUser(params.userId as string);
@@ -43,7 +47,7 @@ export default function Profile() {
               src={user?.data?.userWithFollowing?.image}
               width={100}
               height={100}
-              className="w-24 rounded-full"
+              className="w-16 rounded-full"
               alt="User Profile Image"
             />
             <div className="flex flex-col gap-2">
@@ -53,7 +57,7 @@ export default function Profile() {
               <p className="">{user?.data?.userWithFollowing?.email}</p>
             </div>
           </div>
-          <div className="flex gap-4 flex-col w-1/4 p-2">
+          <div className="flex gap-4 flex-col w-1/4 text-sm">
             <div className="flex gap-4">
               <div className="text-center">
                 <h3 className="font-semibold">
@@ -84,6 +88,13 @@ export default function Profile() {
             )}
           </div>
         </div>
+      ) : null}
+      {posts.isSuccess ? (
+        <>
+          {posts.data.posts.map((post: any, index: any) => (
+            <Post key={index} post={post} />
+          ))}
+        </>
       ) : null}
     </>
   );

@@ -45,6 +45,7 @@ model User {
   sessions      Session[]
   following     follow[]  @relation("following")
   followed      follow[]  @relation("followed")
+  posts         Post[]
 }
 
 model VerificationToken {
@@ -63,4 +64,12 @@ model follow {
   followed    User   @relation("followed", fields: [followedId], references: [id], onDelete: Cascade)
 
   @@unique([followedId, followingId])
+}
+
+model Post {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  content    String
+  created_at DateTime @default(now())
 }
