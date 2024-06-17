@@ -32,10 +32,18 @@ export async function GET(
     },
     include: {
       user: true,
+      likes: true,
+      replies: {
+        include: {
+          user: true,
+          likes: true,
+        },
+      },
     },
     orderBy: {
       created_at: "desc",
     },
   });
-  return NextResponse.json({ posts }, { status: 200 });
+  console.log(posts);
+  return NextResponse.json(posts, { status: 200 });
 }

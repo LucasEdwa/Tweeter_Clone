@@ -44,35 +44,31 @@ export default function Profile() {
         <div className="flex justify-between items-center p-4 border-b border-gray-900 ">
           <div className="flex items-center  gap-4">
             <Image
-              src={user?.data?.userWithFollowing?.image}
+              src={user?.data?.image}
               width={100}
               height={100}
               className="w-16 rounded-full"
               alt="User Profile Image"
             />
             <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-semibold">
-                {user?.data?.userWithFollowing?.name}
-              </h1>
-              <p className="">{user?.data?.userWithFollowing?.email}</p>
+              <h1 className="text-xl font-semibold">{user?.data?.name}</h1>
+              <p className="">{user?.data?.email}</p>
             </div>
           </div>
           <div className="flex gap-4 flex-col w-1/4 text-sm">
             <div className="flex gap-4">
               <div className="text-center">
-                <h3 className="font-semibold">
-                  {user?.data?.userWithFollowing?.followed.length}
-                </h3>
+                <h3 className="font-semibold">{user?.data?.followed.length}</h3>
                 <h4>Followers</h4>
               </div>
               <div className="text-center">
                 <h3 className="font-semibold">
-                  {user?.data?.userWithFollowing?.following.length}
+                  {user?.data?.following.length}
                 </h3>
                 <h4>Following</h4>
               </div>
             </div>
-            {user.data?.userWithFollowing?.email === session?.user?.email ? (
+            {user.data?.email === session?.user?.email ? (
               <button className="bg-blue-400 p-1 text-white rounded-full hover:bg-blue-500">
                 Edit Profile
               </button>
@@ -81,9 +77,7 @@ export default function Profile() {
                 onClick={() => followUser.mutate()}
                 className="bg-blue-400 p-1 text-white rounded-full hover:bg-blue-500"
               >
-                {user.data?.userWithFollowing?.isFollowing
-                  ? "Unfollow"
-                  : "Follow"}
+                {user.data?.isFollowing ? "Unfollow" : "Follow"}
               </button>
             )}
           </div>
@@ -91,7 +85,7 @@ export default function Profile() {
       ) : null}
       {posts.isSuccess ? (
         <>
-          {posts.data.posts.map((post: any, index: any) => (
+          {posts.data.map((post: any, index: any) => (
             <Post key={index} post={post} />
           ))}
         </>

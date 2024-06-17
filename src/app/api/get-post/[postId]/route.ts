@@ -18,16 +18,41 @@ export async function GET(
       { status: 401 }
     );
   }
-
+  const requester = await prisma.user.findUnique({
+    where: { email: session?.user?.email ?? "" },
+  });
+  if (!requester) {
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
+  }
   const post = await prisma.post.findUnique({
     where: { id: postId },
     include: {
       user: true,
+      likes: true,
+      replies: {
+        include: {
+          user: true,
+          likes: true,
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      },
     },
   });
   if (!post) {
     return NextResponse.json({ message: "Post not found" }, { status: 404 });
   }
+  const postWithLikeStatus = {
+    ...post,
+    requesterHasLiked: post.likes.some((like) => like.userId === requester.id),
+    replies: post.replies.map((reply) => ({
+      ...reply,
+      requesterHasLiked: reply.likes.some(
+        (like) => like.userId === requester.id
+      ),
+    })),
+  };
 
-  return NextResponse.json({ post }, { status: 200 });
+  return NextResponse.json(postWithLikeStatus, { status: 200 });
 }

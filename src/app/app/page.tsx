@@ -50,7 +50,7 @@ export default function App() {
       <div className="flex flex-col">
         {posts.isSuccess ? (
           <>
-            {posts.data?.response.map((post: any, index: any) => (
+            {posts.data?.map((post: any, index: any) => (
               <Post key={index} post={post} />
             ))}
           </>

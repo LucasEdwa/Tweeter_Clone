@@ -31,7 +31,24 @@ const api = {
     return data;
   },
   getPost: async (postId: string) => {
-    const { data } = await axios.get("/api/get-post/" + postId);
+    try {
+      const { data } = await axios.get("/api/get-post/" + postId);
+      return data;
+    } catch (error) {
+      console.log(error);
+      return undefined;
+    }
+  },
+  likePost: async (postId: string) => {
+    const { data } = await axios.post("/api/like-post/" + postId);
+    return data;
+  },
+  replyToPost: async (postId: string, content: { content: string }) => {
+    const { data } = await axios.post("/api/reply-to-post/" + postId, content);
+    return data;
+  },
+  likeReplyToPost: async (replyId: string) => {
+    const { data } = await axios.post("/api/like-reply-to-post/" + replyId);
     return data;
   },
 };
