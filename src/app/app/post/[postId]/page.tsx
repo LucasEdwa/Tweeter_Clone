@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Post from "@/components/Post";
 import { useState } from "react";
 import Link from "next/link";
+import PageTitle from "@/components/PageTitle";
 
 export default function PostPage() {
   const params = useParams();
@@ -34,6 +35,8 @@ export default function PostPage() {
   console.log(post);
   return (
     <>
+      <PageTitle title="Post" />
+
       {post.isSuccess ? (
         <>
           <Post post={post.data} />{" "}
@@ -58,10 +61,11 @@ export default function PostPage() {
                 onClick={() => replyToPost.mutate()}
                 className="bg-gray-700 p-2 rounded-lg text-white"
               >
-                Tweet
+                Reply
               </button>
             </div>
           </div>
+          {""}
           {post.data.replies.map((reply: any, index: any) => (
             <div key={index} className="border-b-2 border-gray-700 ">
               <div className="flex gap-4 items-center p-4">
@@ -73,19 +77,21 @@ export default function PostPage() {
                   alt="logo"
                 />
                 <div>
-                  <div>{reply.user.name}</div>
+                  <Link
+                    href={"/app/profile/" + reply.userId}
+                    className="font-semibold text-lg"
+                  >
+                    {reply.user.name}
+                  </Link>
                   <div>{reply.user.email}</div>
                 </div>
               </div>
-              <div className="">{reply.content}</div>
+              <div className="p-4">{reply.content}</div>
               <div className="flex justify-between items-center mt-4 ">
-                <Link
-                  className="text-gray-700 border-y-2 p-2 text-center hover:border-x-2 border-gray-700 w-full"
-                  href={"/app/post/" + reply.id}
+                <button
+                  disabled
+                  className="text-gray-700  border-y-2 text-center   p-2 border-gray-700 w-full"
                 >
-                  4 Reply
-                </Link>
-                <button className="text-gray-700  border-y-2 text-center hover:border-x-2 p-2 border-gray-700 w-full">
                   Retweet
                 </button>
                 <button

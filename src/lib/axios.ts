@@ -32,11 +32,11 @@ const api = {
   },
   getPost: async (postId: string) => {
     try {
-      const { data } = await axios.get("/api/get-post/" + postId);
+      const { data } = await axios.get(`/api/get-post/${postId}`);
       return data;
     } catch (error) {
-      console.log(error);
-      return undefined;
+      console.error("Failed to fetch post:", error);
+      throw new Error("Failed to fetch post");
     }
   },
   likePost: async (postId: string) => {
@@ -50,6 +50,41 @@ const api = {
   likeReplyToPost: async (replyId: string) => {
     const { data } = await axios.post("/api/like-reply-to-post/" + replyId);
     return data;
+  },
+  searchUsers: async (content: { content: string }) => {
+    const { data } = await axios.post("/api/search-users", content);
+    return data;
+  },
+  readNotifications: async () => {
+    const { data } = await axios.post("/api/read-notifications");
+    return data;
+  },
+  getNotifications: async () => {
+    const { data } = await axios.get("/api/get-notifications");
+    return data;
+  },
+  getUnreadNotifications: async () => {
+    const { data } = await axios.get("/api/get-unread-notifications");
+    return data;
+  },
+
+  retweet: async (postId: string, content: string) => {
+    try {
+      const { data } = await axios.post(`/api/retweet/${postId}`, { content });
+      return data;
+    } catch (error) {
+      console.error("Failed to retweet:", error);
+      throw new Error("Failed to retweet");
+    }
+  },
+  getRetweets: async () => {
+    try {
+      const { data } = await axios.get("/api/get-retweets");
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch retweets:", error);
+      throw new Error("Failed to fetch retweets");
+    }
   },
 };
 export default api;

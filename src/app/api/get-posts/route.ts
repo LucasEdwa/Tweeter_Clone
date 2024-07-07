@@ -28,6 +28,8 @@ export async function GET(request: NextRequest) {
     include: {
       user: true,
       likes: true,
+      retweets: true,
+
       replies: {
         include: { likes: true },
       },
@@ -36,27 +38,24 @@ export async function GET(request: NextRequest) {
       created_at: "desc",
     },
   });
-  let response = [];
-  for (let post of posts) {
-    let postWithLikeStatus = {
+
+  const response = posts
+    .filter(
+      (post) =>
+        user.following.some((follow) => follow.followedId === post.userId) ||
+        post.userId === user.id
+    )
+    .map((post) => ({
       ...post,
       requesterHasLiked: post.likes.some((like) => like.userId === user.id),
       replies: post.replies.map((reply) => ({
         ...reply,
         requesterHasLiked: reply.likes.some((like) => like.userId === user.id),
       })),
-    };
-
-    for (const follow of user.following) {
-      if (follow.followedId === post.userId) {
-        response.push(postWithLikeStatus);
-      }
-    }
-
-    if (post.userId === user.id) {
-      response.push(postWithLikeStatus);
-    }
-  }
+      requesterHasRetweeted: post.retweets.some(
+        (retweet) => retweet.userId === user.id
+      ),
+    }));
 
   return NextResponse.json(response, { status: 200 });
 }

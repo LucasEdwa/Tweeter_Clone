@@ -65,6 +65,14 @@ export async function POST(
       content: postData.content,
     },
   });
-
+  if (post.userId !== requester.id) {
+    await prisma.notification.create({
+      data: {
+        user: { connect: { id: post.userId } },
+        content: `${requester.name} has replied to your post`,
+        type: "reply",
+      },
+    });
+  }
   return NextResponse.json({ message: "Reply created" });
 }

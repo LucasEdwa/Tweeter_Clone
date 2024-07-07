@@ -39,6 +39,7 @@ export async function GET(
           likes: true,
         },
       },
+      retweets: true,
     },
     orderBy: {
       created_at: "desc",

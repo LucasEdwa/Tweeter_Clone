@@ -56,6 +56,15 @@ export async function POST(
         user: { connect: { id: requester.id } },
       },
     });
+    if (post.userId !== requester.id) {
+      await prisma.notification.create({
+        data: {
+          user: { connect: { id: post.userId } },
+          content: `${requester.name} has liked your post`,
+          type: "like",
+        },
+      });
+    }
     return NextResponse.json({ message: "Liked Post" });
   }
 }

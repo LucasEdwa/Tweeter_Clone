@@ -36,18 +36,20 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  following     follow[]  @relation("following")
-  followed      follow[]  @relation("followed")
+  following     follow[]       @relation("following")
+  followed      follow[]       @relation("followed")
   posts         Post[]
   likes         Like[]
   replies       Reply[]
+  retweets      Retweet[]
+  notifications Notification[]
 }
 
 model VerificationToken {
@@ -69,23 +71,26 @@ model follow {
 }
 
 model Post {
-  id         String   @id @default(cuid())
-  user       User     @relation(fields: [userId], references: [id])
+  id         String    @id @default(cuid())
+  user       User      @relation(fields: [userId], references: [id])
   userId     String
   content    String
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
   likes      Like[]
   replies    Reply[]
+  retweets   Retweet[]
 }
 
 model Like {
-  id      String  @id @default(cuid())
-  post    Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId  String?
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String
-  reply   Reply?  @relation(fields: [replyId], references: [id], onDelete: Cascade)
-  replyId String?
+  id        String   @id @default(cuid())
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  reply     Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  replyId   String?
+  retweet   Retweet? @relation(fields: [retweetId], references: [id], onDelete: Cascade)
+  retweetId String?
 }
 
 model Reply {
@@ -97,4 +102,27 @@ model Reply {
   content    String
   created_at DateTime @default(now())
   likes      Like[]
+}
+
+model Retweet {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  post       Post     @relation(fields: [postId], references: [id])
+  postId     String
+  created_at DateTime @default(now())
+  likes      Like[]
+  content    String?
+
+  @@unique([userId, postId])
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  type       String
+  content    String
+  read       Boolean  @default(false)
+  created_at DateTime @default(now())
 }

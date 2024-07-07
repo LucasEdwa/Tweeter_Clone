@@ -29,6 +29,8 @@ export async function GET(
     include: {
       user: true,
       likes: true,
+      retweets: true,
+
       replies: {
         include: {
           user: true,
@@ -52,6 +54,9 @@ export async function GET(
         (like) => like.userId === requester.id
       ),
     })),
+    requesterHasRetweeted: post.retweets.some(
+      (retweet) => retweet.userId === requester.id
+    ),
   };
 
   return NextResponse.json(postWithLikeStatus, { status: 200 });

@@ -1,15 +1,16 @@
 "use client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { useParams, redirect } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Post from "@/components/Post";
+import PageTitle from "@/components/PageTitle";
 
 export default function Profile() {
   const params = useParams();
   const { data: session } = useSession();
-
+  const queryClient = useQueryClient();
   const user = useQuery({
     queryKey: ["user", params.userId],
     queryFn: () => {
@@ -25,8 +26,7 @@ export default function Profile() {
       return api.followUser(params.userId as string);
     },
     onSuccess: () => {
-      // Refetch the user query after a successful follow/unfollow
-      user.refetch();
+      queryClient.invalidateQueries();
     },
   });
 
@@ -38,6 +38,8 @@ export default function Profile() {
   }
   return (
     <>
+      <PageTitle title="Profile" />
+
       {user.isLoading ? <div> Loading...</div> : null}
       {user.isError ? <div> Error...</div> : null}
       {user.isSuccess ? (
