@@ -5,6 +5,7 @@ import SessionProvider from "@/components/SessionProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import QueryProvider from "@/components/QueryProvider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SessionProvider session={session}>
           <QueryProvider>{children}</QueryProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </SessionProvider>
       </body>
     </html>

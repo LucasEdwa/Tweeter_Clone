@@ -8,6 +8,24 @@ import Post from "@/components/Post";
 import PageTitle from "@/components/PageTitle";
 import Retweet from "@/components/Retweet";
 
+// Define the types for Post and Retweet
+interface PostType {
+  id: string;
+  content: string;
+  created_at: string;
+}
+
+interface RetweetType {
+  postId: string;
+  user: {
+    image: string;
+    id: string;
+    name: string;
+  };
+  content: string;
+  created_at: string;
+}
+
 export default function App() {
   const { data: session } = useSession();
   const [postData, setPostData] = useState("");
@@ -31,7 +49,7 @@ export default function App() {
     queryFn: api.getRetweets,
   });
 
-  const combinedData = [];
+  const combinedData: (PostType | RetweetType)[] = [];
   if (posts.isSuccess && retweets.isSuccess) {
     combinedData.push(...posts.data, ...retweets.data);
     combinedData.sort(
@@ -61,7 +79,7 @@ export default function App() {
         <div>
           <button
             onClick={() => createPost.mutate()}
-            className="bg-gray-700 p-2 rounded-lg text-white"
+            className="bg-gray-700 px-6 py-1 rounded-lg text-white"
           >
             Tweet
           </button>
@@ -72,10 +90,18 @@ export default function App() {
           <div>Loading...</div>
         ) : (
           combinedData.map((item, index) => {
-            if (item.postId) {
-              return <Retweet key={index} postId={item.postId} />;
+            if ("postId" in item) {
+              const post = posts.data.find(
+                (p: PostType) => p.id === item.postId
+              );
+              const retweetsForPost = retweets.data.filter(
+                (r: RetweetType) => r.postId === item.postId
+              );
+              return (
+                <Retweet key={index} post={post} retweets={retweetsForPost} />
+              );
             } else {
-              return <Post key={index} post={item} />;
+              return <Post key={index} post={item as PostType} />;
             }
           })
         )}

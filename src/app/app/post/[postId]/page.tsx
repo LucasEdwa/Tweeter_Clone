@@ -18,6 +18,12 @@ export default function PostPage() {
     queryKey: ["post", params.postId],
     queryFn: () => api.getPost(params.postId as string),
   });
+  const deletePost = useMutation({
+    mutationFn: () => api.deletePost(params.postId as string),
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
   const replyToPost = useMutation({
     mutationFn: () =>
       api.replyToPost(params.postId as string, { content: replyData }),

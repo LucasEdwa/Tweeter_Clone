@@ -86,5 +86,12 @@ const api = {
       throw new Error("Failed to fetch retweets");
     }
   },
+  deletePost: async (postId: string) => {
+    const response = await axios.delete(`/api/delete-post/${postId}`);
+    return response.data;
+  },
+  deleteRetweet: async (retweetId: string) => {
+    const response = await axios.delete(`/api/delete-retweet/${retweetId}`);
+  },
 };
 export default api;
